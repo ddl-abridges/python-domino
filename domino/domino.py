@@ -537,6 +537,8 @@ class Domino:
 
         if commit_id is not None:
             self._validate_commit_id(commit_id)
+        if main_repo_git_ref is not None:
+            self._validate_main_repo_git_ref(main_repo_git_ref)
         if hardware_tier_id is not None:
             self._validate_hardware_tier_id(hardware_tier_id)
         if hardware_tier_name is not None:
@@ -1890,6 +1892,20 @@ class Domino:
             if commit_id == commit:
                 return True
         raise exceptions.CommitNotFoundException(f"{commit_id} commit Id not found")
+
+    def _validate_main_repo_git_ref(self, main_repo_git_ref):
+        self.log.debug(f"Validating Git-Based Project")
+        url = self._routes.project_v4(self.project_id)
+        project_info = self._get(url)
+        if "mainRepository" not in project_info:
+            raise Exception(
+                "Main Repository not found. "
+                "main_repo_git_ref is only for use with git-based projects."
+            )
+        self.log.debug(f"Validating git reference type: {main_repo_git_ref['type']}")
+        if main_repo_git_ref['type'] not in ['head', 'commitId', 'tags', 'branches']:
+            raise exceptions.MalformedInputException(f"Invalid git reference type.")
+        return True
 
     # Helper methods
     def _get(self, url):
