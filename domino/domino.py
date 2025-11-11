@@ -1,3 +1,5 @@
+
+
 import functools
 import json
 import logging
@@ -319,6 +321,7 @@ class Domino:
         self,
         command: str,
         commit_id: Optional[str] = None,
+        main_repo_git_ref: Optional[dict] = None,
         hardware_tier_id: Optional[str] = None,
         hardware_tier_name: Optional[str] = None,
         environment_id: Optional[str] = None,
@@ -335,6 +338,15 @@ class Domino:
         :param commit_id:                           string (Optional)
                                                     The commitId to launch from. If not provided, will launch
                                                     from latest commit.
+        :param main_repo_git_ref:                   dict (Optional)
+                                                    The main git reference definition contains information about 
+                                                    the git reference for the main repository. The following
+                                                    properties can be provided
+                                                    {
+                                                        "type": "head" | "commitId" | "tags" | "branches"
+                                                        "value": "<Reference Value>"
+                                                        (optional but required for relevant git ref types)
+                                                    }
         :param hardware_tier_id:                    string (Optional)
                                                     The hardware tier ID to launch job in. If not provided
                                                     it will use the default hardware tier for the project
@@ -587,6 +599,7 @@ class Domino:
             "projectId": self.project_id,
             "commandToRun": command,
             "commitId": commit_id,
+            "mainRepoGitRef": main_repo_git_ref,
             "overrideHardwareTierId": resolved_hardware_tier_id,
             "onDemandSparkClusterProperties": spark_cluster_properties,
             "computeClusterProperties": validated_compute_cluster_properties,
